@@ -1,9 +1,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
     <application
         android:allowBackup="false"
         android:label="توان‌سنج گوشی علی آسان"
         android:supportsRtl="true"
         android:theme="@android:style/Theme.Material.Light.NoActionBar">
+
+        <activity
+            android:name=".AppActivity"
+            android:exported="false" />
 
         <activity
             android:name=".GameActivity"
@@ -21,4 +26,5 @@
         </activity>
 
     </application>
+
 </manifest>
