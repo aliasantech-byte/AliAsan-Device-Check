@@ -48,6 +48,7 @@ class MainActivity : Activity() {
         addInfo(layout, "نسخه اندروید", Build.VERSION.RELEASE)
         addInfo(layout, "تعداد پردازنده‌های قابل استفاده",
             Runtime.getRuntime().availableProcessors().toString())
+        
 
         val memory = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
         val memoryInfo = ActivityManager.MemoryInfo()
@@ -88,7 +89,33 @@ class MainActivity : Activity() {
             if (level >= 0 && scale > 0) level * 100 / scale
             else -1
 
-        addInfo(layout, "درصد باتری",
+        addInfo(layou// معماری پردازنده گوشی
+val supported64Bit = Build.SUPPORTED_64_BIT_ABIS
+val supported32Bit = Build.SUPPORTED_32_BIT_ABIS
+
+val cpuArchitecture = when {
+    supported64Bit.isNotEmpty() -> "۶۴ بیتی"
+    supported32Bit.isNotEmpty() -> "۳۲ بیتی"
+    else -> "نامشخص"
+}
+
+addInfo(layout, "معماری پردازنده گوشی", cpuArchitecture)
+
+// معماری اجرای برنامه
+val appArchitecture = if (android.os.Process.is64Bit()) {
+    "۶۴ بیتی"
+} else {
+    "۳۲ بیتی"
+}
+
+addInfo(layout, "معماری اجرای برنامه", appArchitecture)
+
+// فهرست معماری‌های پشتیبانی‌شده
+addInfo(
+    layout,
+    "معماری‌های پشتیبانی‌شده",
+    Build.SUPPORTED_ABIS.joinToString("، ")
+)t, "درصد باتری",
             if (batteryPercent >= 0) "$batteryPercent٪" else "نامشخص")
 
         scroll.addView(layout)
