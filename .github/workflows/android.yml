@@ -1,9 +1,8 @@
-
 name: Build AliAsan Device Check
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   workflow_dispatch:
 
 jobs:
@@ -18,22 +17,31 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 17
+          java-version: "17"
 
       - name: آماده‌سازی Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
-          gradle-version: '8.9'
+          gradle-version: "8.9"
 
       - name: بررسی نسخه Gradle
         run: gradle --version
 
-      - name: ساخت APK با گزارش خطای کامل
-        run: gradle assembleDebug --stacktrace --info
+      - name: ساخت APK و نمایش خطای Kotlin
+        shell: bash
+        run: |
+          set +e
+          gradle assembleDebug --stacktrace --info 2>&1 | tee build.log
+          build_status=${PIPESTATUS[0]}
+
+          echo "===== خطاهای Kotlin ====="
+          grep -n -E '(^e:|Unresolved reference|Expecting|Type mismatch|Compilation error|error:)' build.log || true
+
+          exit "$build_status"
 
       - name: ذخیره APK
         uses: actions/upload-artifact@v4
         if: success()
         with:
-          name: AliAsan-Device-Check
+          name: AliAsan-Device-Check-v1.0
           path: app/build/outputs/apk/debug/app-debug.apk
