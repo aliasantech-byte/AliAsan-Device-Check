@@ -26,7 +26,7 @@ class MainActivity : Activity() {
 
     private val blue = Color.rgb(25, 75, 150)
     private val yellow = Color.rgb(245, 185, 30)
-    private val background = Color.rgb(244, 247, 252)
+    private val pageBackground = Color.rgb(244, 247, 252)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,7 +36,7 @@ class MainActivity : Activity() {
         val layout = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(dp(18), dp(18), dp(18), dp(25))
-            setBackgroundColor(background)
+            setBackgroundColor(pageBackground)
             layoutDirection = View.LAYOUT_DIRECTION_RTL
         }
 
@@ -45,7 +45,7 @@ class MainActivity : Activity() {
             orientation = LinearLayout.VERTICAL
             gravity = Gravity.CENTER
             setPadding(dp(18), dp(30), dp(18), dp(30))
-            background = rounded(blue, 22)
+            setBackground(rounded(blue, 22))
         }
 
         val title = TextView(this).apply {
@@ -81,17 +81,24 @@ class MainActivity : Activity() {
 
         val socModel = if (Build.VERSION.SDK_INT >= 31) {
             Build.SOC_MODEL
-        } else ""
+        } else {
+            ""
+        }
 
         val socManufacturer = if (Build.VERSION.SDK_INT >= 31) {
             Build.SOC_MANUFACTURER
-        } else ""
+        } else {
+            ""
+        }
 
         val cpuName = when {
             socModel.isNotBlank() && socModel != "unknown" -> socModel
-            !cpuInfo["model name"].isNullOrBlank() -> cpuInfo["model name"]!!
-            !cpuInfo["hardware"].isNullOrBlank() -> cpuInfo["hardware"]!!
-            !cpuInfo["processor"].isNullOrBlank() -> cpuInfo["processor"]!!
+            !cpuInfo["model name"].isNullOrBlank() ->
+                cpuInfo["model name"]!!
+            !cpuInfo["hardware"].isNullOrBlank() ->
+                cpuInfo["hardware"]!!
+            !cpuInfo["processor"].isNullOrBlank() ->
+                cpuInfo["processor"]!!
             else -> Build.HARDWARE
         }
 
@@ -100,7 +107,9 @@ class MainActivity : Activity() {
         addInfo(
             layout,
             "سازنده تراشه",
-            socManufacturer.ifBlank { "اطلاعات در دسترس نیست" }
+            if (socManufacturer.isNotBlank() &&
+                socManufacturer != "unknown"
+            ) socManufacturer else "اطلاعات در دسترس نیست"
         )
 
         addInfo(
@@ -243,7 +252,9 @@ class MainActivity : Activity() {
                     if (parts.size == 2) {
                         parts[0].trim().lowercase(Locale.US) to
                             parts[1].trim()
-                    } else null
+                    } else {
+                        null
+                    }
                 }
                 .toMap()
         } catch (e: Exception) {
@@ -270,7 +281,11 @@ class MainActivity : Activity() {
 
     private fun formatFrequency(mhz: Long): String {
         return if (mhz >= 1000) {
-            String.format(Locale.US, "%.2f گیگاهرتز", mhz / 1000.0)
+            String.format(
+                Locale.US,
+                "%.2f گیگاهرتز",
+                mhz / 1000.0
+            )
         } else {
             "$mhz مگاهرتز"
         }
@@ -297,7 +312,7 @@ class MainActivity : Activity() {
         val card = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(dp(15), dp(13), dp(15), dp(13))
-            background = rounded(Color.WHITE, 14)
+            setBackground(rounded(Color.WHITE, 14))
             layoutDirection = View.LAYOUT_DIRECTION_RTL
         }
 
