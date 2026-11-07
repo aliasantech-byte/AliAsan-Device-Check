@@ -12,6 +12,7 @@ import android.os.Environment
 import android.view.Gravity
 import android.view.View
 import android.widget.LinearLayout
+import android.os.StatFs
 import android.widget.ScrollView
 import android.widget.TextView
 import android.text.format.Formatter
