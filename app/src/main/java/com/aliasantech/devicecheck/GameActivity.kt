@@ -10,16 +10,16 @@ import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.view.Gravity
+import android.view.View
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
 import java.io.File
-import java.util.Locale
 
 class GameActivity : Activity() {
 
-    private val blue = Color.rgb(20, 75, 150)
-    private val yellow = Color.rgb(255, 193, 7)
+    private val blue = Color.rgb(25, 75, 150)
+    private val yellow = Color.rgb(245, 185, 30)
     private val dark = Color.rgb(35, 45, 60)
 
     private lateinit var resultBox: LinearLayout
@@ -37,10 +37,12 @@ class GameActivity : Activity() {
     }
 
     private fun showGames() {
+
         val root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(20, 24, 20, 24)
             setBackgroundColor(Color.rgb(240, 244, 250))
+            layoutDirection = View.LAYOUT_DIRECTION_RTL
         }
 
         val title = TextView(this).apply {
@@ -69,12 +71,32 @@ class GameActivity : Activity() {
             background = rounded(Color.WHITE)
         }
 
+        val listTitle = TextView(this).apply {
+            text = "فهرست بازی‌ها"
+            textSize = 18f
+            setTextColor(blue)
+            typeface = Typeface.DEFAULT_BOLD
+            setPadding(4, 22, 4, 12)
+        }
+
+        root.addView(
+            resultBox,
+            LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+        )
+
+        root.addView(listTitle)
+
         val scroll = ScrollView(this)
+
         val gameList = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
         }
 
         GameCatalog.games.forEach { game ->
+
             val item = TextView(this).apply {
                 text = "${game.name}\n${game.category}"
                 textSize = 17f
@@ -94,34 +116,18 @@ class GameActivity : Activity() {
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
             )
+
             params.bottomMargin = 12
+
             gameList.addView(item, params)
         }
 
         scroll.addView(gameList)
 
         root.addView(
-            resultBox,
-            LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.WRAP_CONTENT
-            )
-        )
-
-        val listTitle = TextView(this).apply {
-            text = "فهرست بازی‌ها"
-            textSize = 18f
-            setTextColor(blue)
-            typeface = Typeface.DEFAULT_BOLD
-            setPadding(4, 22, 4, 12)
-        }
-
-        root.addView(listTitle)
-
-        root.addView(
             scroll,
             LinearLayout.LayoutParams(
-                LinearLayout.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT,
                 0,
                 1f
             )
@@ -131,9 +137,14 @@ class GameActivity : Activity() {
     }
 
     private fun checkSelectedGame(game: Game) {
-        val result = GameCatalog.check(game, getDeviceSpecs())
+
+        val result = GameCatalog.check(
+            game,
+            getDeviceSpecs()
+        )
 
         val statusText = when (result.status) {
+
             CompatibilityStatus.COMPATIBLE ->
                 "حداقل مشخصات بررسی‌شده را دارد"
 
@@ -145,9 +156,15 @@ class GameActivity : Activity() {
         }
 
         val statusColor = when (result.status) {
-            CompatibilityStatus.COMPATIBLE -> Color.rgb(30, 130, 70)
-            CompatibilityStatus.NOT_COMPATIBLE -> Color.rgb(190, 55, 55)
-            CompatibilityStatus.UNKNOWN -> Color.rgb(190, 120, 20)
+
+            CompatibilityStatus.COMPATIBLE ->
+                Color.rgb(30, 130, 70)
+
+            CompatibilityStatus.NOT_COMPATIBLE ->
+                Color.rgb(190, 55, 55)
+
+            CompatibilityStatus.UNKNOWN ->
+                Color.rgb(190, 120, 20)
         }
 
         resultBox.removeAllViews()
@@ -171,12 +188,14 @@ class GameActivity : Activity() {
         resultBox.addView(status)
 
         result.details.forEach { detail ->
+
             val line = TextView(this).apply {
                 text = "• $detail"
                 textSize = 14f
                 setTextColor(dark)
                 setPadding(0, 5, 0, 5)
             }
+
             resultBox.addView(line)
         }
 
@@ -190,15 +209,18 @@ class GameActivity : Activity() {
     }
 
     private fun getDeviceSpecs(): DeviceSpecs {
+
         val manager =
             getSystemService(ACTIVITY_SERVICE) as ActivityManager
 
         val memoryInfo = ActivityManager.MemoryInfo()
         manager.getMemoryInfo(memoryInfo)
 
-        val totalRamMb = memoryInfo.totalMem / (1024 * 1024)
+        val totalRamMb =
+            memoryInfo.totalMem / (1024 * 1024)
 
         val stat = StatFs(filesDir.absolutePath)
+
         val freeStorageMb =
             stat.availableBytes / (1024 * 1024)
 
@@ -219,11 +241,16 @@ class GameActivity : Activity() {
     }
 
     private fun readMaxCpuFrequency(): Long? {
+
         return try {
+
             val values = File("/sys/devices/system/cpu")
                 .listFiles()
-                ?.filter { it.name.matches(Regex("cpu[0-9]+")) }
+                ?.filter {
+                    it.name.matches(Regex("cpu[0-9]+"))
+                }
                 ?.mapNotNull { cpu ->
+
                     val file = File(
                         cpu,
                         "cpufreq/cpuinfo_max_freq"
@@ -236,6 +263,7 @@ class GameActivity : Activity() {
                 }
 
             values?.maxOrNull()?.div(1000)
+
         } catch (_: Exception) {
             null
         }
