@@ -68,6 +68,37 @@ class MainActivity : Activity() {
         header.addView(brand)
         layout.addView(header)
 
+        // دکمه ورود به بخش بررسی بازی‌ها
+        val gameButton = TextView(this).apply {
+            text = "🎮  بررسی سازگاری بازی‌ها"
+            textSize = 18f
+            setTextColor(blue)
+            typeface = Typeface.DEFAULT_BOLD
+            gravity = Gravity.CENTER
+            setPadding(dp(15), dp(18), dp(15), dp(18))
+            setBackground(rounded(yellow, 18))
+            elevation = dp(4).toFloat()
+
+            setOnClickListener {
+                startActivity(
+                    Intent(
+                        this@MainActivity,
+                        GameActivity::class.java
+                    )
+                )
+            }
+        }
+
+        val gameButtonParams = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        ).apply {
+            topMargin = dp(18)
+            bottomMargin = dp(8)
+        }
+
+        layout.addView(gameButton, gameButtonParams)
+
         addSection(layout, "مشخصات دستگاه")
 
         addInfo(layout, "برند گوشی", Build.MANUFACTURER)
