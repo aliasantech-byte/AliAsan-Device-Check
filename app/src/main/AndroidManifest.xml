@@ -8,10 +8,12 @@
         android:supportsRtl="true"
         android:theme="@android:style/Theme.Material.Light.NoActionBar">
 
+        <!-- صفحه بررسی بازی‌ها -->
         <activity
             android:name=".GameActivity"
             android:exported="false" />
 
+        <!-- صفحه اصلی برنامه -->
         <activity
             android:name=".MainActivity"
             android:exported="true">
