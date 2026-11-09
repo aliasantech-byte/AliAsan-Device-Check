@@ -25,22 +25,34 @@ jobs:
         with:
           gradle-version: 8.9
 
-      - name: Check Gradle Version
-        run: gradle --version
-
-      - name: Build APK and Show Kotlin Errors
+      - name: Decode Release Keystore
         shell: bash
+        env:
+          ALIASAN_KEYSTORE_BASE64: ${{ secrets.ALIASAN_KEYSTORE_BASE64 }}
         run: |
-          set +e
-          gradle assembleDebug --stacktrace --info 2>&1 | tee build.log
-          build_status=${PIPESTATUS[0]}
-          echo "===== Kotlin Errors ====="
-          grep -n -E '(^e:|Unresolved reference|Expecting|Type mismatch|Compilation error|error:)' build.log || true
-          exit "$build_status"
+          printf '%s' "$ALIASAN_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/aliasan-release.jks"
+          chmod 600 "$RUNNER_TEMP/aliasan-release.jks"
 
-      - name: Upload APK
+      - name: Verify Keystore
+        run: |
+          keytool -list -keystore "$RUNNER_TEMP/aliasan-release.jks" -storepass "$ALIASAN_KEYSTORE_PASSWORD"
+        env:
+          ALIASAN_KEYSTORE_PASSWORD: ${{ secrets.ALIASAN_KEYSTORE_PASSWORD }}
+
+      - name: Build Signed Release APK
+        shell: bash
+        env:
+          ALIASAN_KEYSTORE_FILE: ${{ runner.temp }}/aliasan-release.jks
+          ALIASAN_KEYSTORE_PASSWORD: ${{ secrets.ALIASAN_KEYSTORE_PASSWORD }}
+          ALIASAN_KEY_ALIAS: ${{ secrets.ALIASAN_KEY_ALIAS }}
+          ALIASAN_KEY_PASSWORD: ${{ secrets.ALIASAN_KEY_PASSWORD }}
+        run: |
+          gradle assembleRelease --stacktrace --info
+
+      - name: Upload Signed APK
         uses: actions/upload-artifact@v4
         if: success()
         with:
-          name: AliAsan-Device-Check-v1.0
-          path: app/build/outputs/apk/debug/app-debug.apk
+          name: AliAsan-Device-Check-v1.0-Release
+          path: app/build/outputs/apk/release/app-release.apk
+          if-no-files-found: error
